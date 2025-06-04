@@ -1,14 +1,8 @@
-import traceback
-from typing import Any
-from django.contrib import admin, messages
-from django.contrib.auth.admin import csrf_protect_m
-from django.http import HttpRequest, JsonResponse
+from django.contrib import admin
 from django.shortcuts import render
 from django.urls import path, reverse
 from django.utils.html import format_html
-from core.form import VideoChunkFinishUploadForm, VideoChunkUploadForm
 from core.models import Video, Tag
-from core.services import VideoChunkUploadException, VideoMediaInvalidStatusException, VideoMediaNotExistsException, create_video_service_factory
 
 class VideoAdmin(admin.ModelAdmin):
     list_display = ('title', 'published_at', 'is_published', 'num_likes', 'num_views', 'redirect_to_upload', )
@@ -29,15 +23,7 @@ class VideoAdmin(admin.ModelAdmin):
     def upload_video(self, request, id):
 
         if request.method == 'POST':
-            form = VideoChunckUploadForm(request.POST, request.FILES)
-            if not form.is_valid():
-                return JsonResponse({'error': form.errors}, status=400)
-            VideoService().process_upload(
-                video_id=id,
-            )
-        return render(request, 'admin/core/upload_video.html')
+            pass
         
+        return render(request, 'admin/core/upload_video.html')
 
-# Register your models here.
-admin.site.register(Video)
-admin.site.register(Tag)
