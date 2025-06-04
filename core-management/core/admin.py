@@ -8,7 +8,7 @@ from django.urls import path, reverse
 from django.utils.html import format_html
 from core.form import VideoChunkFinishUploadForm, VideoChunkUploadForm
 from core.models import Video, Tag
-from core.services import VideoChunkUploadException, VideoMediaInvalidStatusException, VideoMediaNotExistsException, create_video_service_factory
+from core.services import   VideoService, VideoChunckUploadForm, VideoChunkUploadException, VideoMediaInvalidStatusException, VideoMediaNotExistsException, create_video_service_factory
 
 class VideoAdmin(admin.ModelAdmin):
     list_display = ('title', 'published_at', 'is_published', 'num_likes', 'num_views', 'redirect_to_upload', )
@@ -16,7 +16,8 @@ class VideoAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls: super().get_urls()
         custom_urls = [
-            path('<int:id>/upload-video', self.upload_video, name='core_video_upload')
+            path('<int:id>/upload-video', self.upload_video, name='core_video_upload'),
+            path('<int:id>/upload-video/finish', self.finish_upload_video, name='core_video_upload_finish')
         ]
         return custom_urls + urls
     
@@ -26,6 +27,7 @@ class VideoAdmin(admin.ModelAdmin):
     
     redirect_to_upload.short_description = 'Upload'
     
+    @csrf_protect_m
     def upload_video(self, request, id):
 
         if request.method == 'POST':
@@ -34,8 +36,14 @@ class VideoAdmin(admin.ModelAdmin):
                 return JsonResponse({'error': form.errors}, status=400)
             VideoService().process_upload(
                 video_id=id,
+                chunck_index=form.cleaned_data['chunckIndex'],
+                chunck=form.cleaned_data['chunck'].read()
             )
-        return render(request, 'admin/core/upload_video.html')
+            context = dict(
+                id=id
+            )
+
+        return render(request, 'admin/core/upload_video.html', context)
         
 
 # Register your models here.
