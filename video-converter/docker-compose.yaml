@@ -1,15 +1,12 @@
-include:
-  - ../postgres/docker-compose.yaml
-  - ../rabbitmq/docker-compose.yaml
-  
+
 services:
   go_app_dev:
     build:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - .:/app # Mount the local app directory for live development
-      - external-storage:/media/uploads # Mount external storage volume
+      - .:/app 
+      - external-storage:/media/uploads
     tty: true
     stdin_open: true
     ports:

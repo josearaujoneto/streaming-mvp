@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"imersaofc/pkg/rabbitmq"
 	"log/slog"
 	"os"
 	"os/exec"
@@ -14,6 +13,8 @@ import (
 	"sort"
 	"strconv"
 	"time"
+
+	"video-converter/pkg/rabbitmq"
 
 	"github.com/streadway/amqp"
 )
